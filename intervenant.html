@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Intervenants</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            margin-top: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Gestion des Intervenants</h1>
+    
+    <!-- Formulaire pour ajouter un intervenant -->
+    <h2>Ajouter un Intervenant</h2>
+    <form id="ajouterIntervenantForm">
+        <label for="nomIntervenant">Nom de l'intervenant :</label>
+        <input type="text" id="nomIntervenant" name="nomIntervenant" required>
+        <input type="submit" value="Ajouter">
+    </form>
+    
+    <!-- Tableau pour afficher la liste des intervenants -->
+    <h2>Liste des Intervenants</h2>
+    <table id="listeIntervenants">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Les intervenants seront ajoutés ici via JavaScript -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Ajout de jQuery (bibliothèque JavaScript) pour faciliter les requêtes AJAX -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    // Fonction pour charger la liste des intervenants au chargement de la page
+    $(document).ready(function() {
+        chargerListeIntervenants();
+    });
+
+    // Fonction pour charger la liste des intervenants depuis le serveur
+    function chargerListeIntervenants() {
+        $.ajax({
+            url: 'votre_api_pour_charger_liste_intervenants',
+            type: 'GET',
+            success: function(data) {
+                // Supprime toutes les lignes du tableau existant
+                $('#listeIntervenants tbody').empty();
+                // Ajoute chaque intervenant à la table
+                data.forEach(function(intervenant) {
+                    $('#listeIntervenants tbody').append('<tr><td>' + intervenant.nom + '</td><td><button onclick="supprimerIntervenant(\'' + intervenant.id + '\')">Supprimer</button></td></tr>');
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Erreur lors du chargement de la liste des intervenants:', error);
+            }
+        });
+    }
+
+    // Fonction pour ajouter un intervenant
+    $('#ajouterIntervenantForm').submit(function(event) {
+        event.preventDefault(); // Empêche le formulaire de se soumettre normalement
+
+        // Récupère le nom de l'intervenant à ajouter
+        var nomIntervenant = $('#nomIntervenant').val();
+
+        // Exécute une requête AJAX pour ajouter l'intervenant
+        $.ajax({
+            url: 'votre_api_pour_ajouter_intervenant',
+            type: 'POST',
+            data: { nom: nomIntervenant },
+            success: function(data) {
+                // Recharge la liste des intervenants
+                chargerListeIntervenants();
+                // Réinitialise le formulaire
+                $('#nomIntervenant').val('');
+            },
+            error: function(xhr, status, error) {
+                console.error('Erreur lors de l\'ajout de l\'intervenant:', error);
+            }
+        });
+    });
+
+    // Fonction pour supprimer un intervenant
+    function supprimerIntervenant(idIntervenant) {
+        // Exécute une requête AJAX pour supprimer l'intervenant
+        $.ajax({
+            url: 'votre_api_pour_supprimer_intervenant',
+            type: 'DELETE',
+            data: { id: idIntervenant },
+            success: function(data) {
+                // Recharge la liste des intervenants
+                chargerListeIntervenants();
+            },
+            error: function(xhr, status, error) {
+                console.error('Erreur lors de la suppression de l\'intervenant:', error);
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
